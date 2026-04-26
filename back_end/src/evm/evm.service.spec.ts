@@ -1,6 +1,11 @@
 import { EvmService, EvmInput, EvmResult } from './evm.service';
 
 describe('EvmService', () => {
+  let service: EvmService;
+  beforeEach(() => {
+    service = new EvmService();
+  });
+
   it('should calculate all EVM indicators correctly', () => {
     const input: EvmInput = {
       bac: 10000,
@@ -8,7 +13,7 @@ describe('EvmService', () => {
       actualProgressPercent: 40,
       ac: 3500,
     };
-    const result: EvmResult = EvmService.calculateEvmIndicators(input);
+    const result: EvmResult = service.calculateEvmIndicators(input);
     expect(result.pv).toBe(5000);
     expect(result.ev).toBe(4000);
     expect(result.cv).toBe(4000 - 3500);
@@ -28,7 +33,7 @@ describe('EvmService', () => {
       actualProgressPercent: 60,
       ac: 0,
     };
-    const result: EvmResult = EvmService.calculateEvmIndicators(input);
+    const result: EvmResult = service.calculateEvmIndicators(input);
     expect(result.cpi).toBeNull();
     expect(result.eac).toBeNull();
     expect(result.vac).toBeNull();
@@ -42,7 +47,7 @@ describe('EvmService', () => {
       actualProgressPercent: 60,
       ac: 5000,
     };
-    const result: EvmResult = EvmService.calculateEvmIndicators(input);
+    const result: EvmResult = service.calculateEvmIndicators(input);
     expect(result.spi).toBeNull();
     expect(result.spiInterpretation).toBe('No calculable');
   });
@@ -54,7 +59,7 @@ describe('EvmService', () => {
       actualProgressPercent: 60,
       ac: 4000,
     };
-    const resultUnderBudget = EvmService.calculateEvmIndicators(inputUnderBudget);
+    const resultUnderBudget = service.calculateEvmIndicators(inputUnderBudget);
     expect(resultUnderBudget.cpiInterpretation).toBe('Under budget');
     expect(resultUnderBudget.spiInterpretation).toBe('Ahead of schedule');
 
@@ -64,7 +69,7 @@ describe('EvmService', () => {
       actualProgressPercent: 50,
       ac: 5000,
     };
-    const resultOnBudget = EvmService.calculateEvmIndicators(inputOnBudget);
+    const resultOnBudget = service.calculateEvmIndicators(inputOnBudget);
     expect(resultOnBudget.cpiInterpretation).toBe('On budget');
     expect(resultOnBudget.spiInterpretation).toBe('On schedule');
   });
