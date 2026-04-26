@@ -18,16 +18,19 @@ export interface EvmResult {
   spiInterpretation: string;
 }
 
+import { Injectable } from '@nestjs/common';
+
+@Injectable()
 export class EvmService {
   private static readonly PERCENT_FACTOR = 0.01;
 
-  static calculateEvmIndicators(input: EvmInput): EvmResult {
+  calculateEvmIndicators(input: EvmInput): EvmResult {
     const { bac, plannedProgressPercent, actualProgressPercent, ac } = input;
 
     // Planned Value (PV)
-    const pv = bac * plannedProgressPercent * this.PERCENT_FACTOR;
+    const pv = bac * plannedProgressPercent * EvmService.PERCENT_FACTOR;
     // Earned Value (EV)
-    const ev = bac * actualProgressPercent * this.PERCENT_FACTOR;
+    const ev = bac * actualProgressPercent * EvmService.PERCENT_FACTOR;
     // Cost Variance (CV)
     const cv = ev - ac;
     // Schedule Variance (SV)
