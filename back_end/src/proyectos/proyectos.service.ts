@@ -1,4 +1,4 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { CreateProyectoDto } from './dto/create-proyecto.dto';
 import { UpdateProyectoDto } from './dto/update-proyecto.dto';
 import { EvmService } from '../evm/evm.service';
@@ -98,8 +98,11 @@ export class ProyectosService {
     return 'This action adds a new proyecto';
   }
 
-  findAll() {
-    return `This action returns all proyectos`;
+  async findAll(): Promise<ProjectDashboardDTO[]> {
+    // Simulación: retorna un array con un proyecto de ejemplo
+    return [
+      await this.getProjectSummary(1)
+    ];
   }
 
   findOne(id: number) {
@@ -109,26 +112,7 @@ export class ProyectosService {
   update(id: number, updateProyectoDto: UpdateProyectoDto) {
     return `This action updates a #${id} proyecto`;
   }
-
-  remove(id: number) {
-    return `This action removes a #${id} proyecto`;
-  }
-}
-  create(createProyectoDto: CreateProyectoDto) {
-    return 'This action adds a new proyecto';
-  }
-
-  findAll() {
-    return `This action returns all proyectos`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} proyecto`;
-  }
-
-  update(id: number, updateProyectoDto: UpdateProyectoDto) {
-    return `This action updates a #${id} proyecto`;
-  }
+  
 
   remove(id: number) {
     return `This action removes a #${id} proyecto`;

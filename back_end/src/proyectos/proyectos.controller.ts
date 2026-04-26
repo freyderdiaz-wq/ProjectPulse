@@ -1,34 +1,29 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Param, UseInterceptors, ClassSerializerInterceptor, HttpCode, HttpStatus } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { ProyectosService } from './proyectos.service';
-import { CreateProyectoDto } from './dto/create-proyecto.dto';
-import { UpdateProyectoDto } from './dto/update-proyecto.dto';
+import { ProjectDashboardDTO } from './dto/project-dashboard.dto';
 
-@Controller('proyectos')
+@ApiTags('projects')
+@Controller('api/projects')
+@UseInterceptors(ClassSerializerInterceptor)
 export class ProyectosController {
   constructor(private readonly proyectosService: ProyectosService) {}
 
-  @Post()
-  create(@Body() createProyectoDto: CreateProyectoDto) {
-    return this.proyectosService.create(createProyectoDto);
-  }
-
   @Get()
+  @ApiOperation({ summary: 'Listar todos los proyectos con su resumen de indicadores' })
+  @ApiResponse({ status: 200, description: 'Lista de proyectos con resumen', type: [ProjectDashboardDTO] })
   findAll() {
+    // Aquí deberías retornar un array de ProjectDashboardDTO
     return this.proyectosService.findAll();
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Obtener el detalle de un proyecto con indicadores consolidados' })
+  @ApiParam({ name: 'id', description: 'ID del proyecto' })
+  @ApiResponse({ status: 200, description: 'Detalle del proyecto con dashboard', type: ProjectDashboardDTO })
+  @ApiResponse({ status: 404, description: 'Proyecto no encontrado' })
   findOne(@Param('id') id: string) {
-    return this.proyectosService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProyectoDto: UpdateProyectoDto) {
-    return this.proyectosService.update(+id, updateProyectoDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.proyectosService.remove(+id);
+    // Devuelve el dashboard consolidado del proyecto
+    return this.proyectosService.getProjectSummary(+id);
   }
 }
