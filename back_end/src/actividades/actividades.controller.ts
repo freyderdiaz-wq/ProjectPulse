@@ -17,7 +17,7 @@ export class ActividadesController {
   @ApiResponse({ status: 200, description: 'Lista de actividades con métricas EVM', type: [ResponseActividadeDto] })
   findByProject(@Param('projectId') projectId: string) {
     // Llama al servicio para obtener actividades por proyecto
-    return this.actividadesService.findByProject(+projectId);
+    return this.actividadesService.findByProject(projectId);
   }
 
   @Post()
@@ -36,6 +36,6 @@ export class ActividadesController {
   @ApiResponse({ status: 404, description: 'Actividad no encontrada' })
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   update(@Param('id') id: string, @Body() updateActividadeDto: UpdateActividadeDto) {
-    return this.actividadesService.update(+id, updateActividadeDto);
+    return this.actividadesService.update(id, updateActividadeDto);
   }
 }

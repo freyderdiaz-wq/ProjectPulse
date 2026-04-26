@@ -1,6 +1,9 @@
 import { Injectable, Inject } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateProyectoDto } from './dto/create-proyecto.dto';
 import { UpdateProyectoDto } from './dto/update-proyecto.dto';
+import { Proyecto } from './entities/proyecto.entity';
 import { EvmService } from '../evm/evm.service';
 import { ProjectDashboardDTO } from './dto/project-dashboard.dto';
 
@@ -8,7 +11,7 @@ import { ProjectDashboardDTO } from './dto/project-dashboard.dto';
 export class ProyectosService {
   constructor(
     @Inject(EvmService) private readonly evmService: EvmService,
-    // Simulación: inyección de actividades, reemplazar por repo real en producción
+    @InjectRepository(Proyecto) private readonly proyectoRepo: Repository<Proyecto>,
   ) {}
 
   /**
@@ -94,27 +97,66 @@ export class ProyectosService {
   }
 
   // Métodos CRUD generados por NestJS
-  create(createProyectoDto: CreateProyectoDto) {
-    return 'This action adds a new proyecto';
+
+  async create(createProyectoDto: CreateProyectoDto) {
+    const proyecto = this.proyectoRepo.create(createProyectoDto);
+    return await this.proyectoRepo.save(proyecto);
   }
 
   async findAll(): Promise<ProjectDashboardDTO[]> {
-    // Simulación: retorna un array con un proyecto de ejemplo
-    return [
-      await this.getProjectSummary(1)
-    ];
+    const proyectos = await this.proyectoRepo.find({ relations: ['actividades'] });
+    // Mapear cada proyecto a su dashboard consolidado
+    return Promise.all(proyectos.map(async (proyecto) => {
+      // Calcular métricas EVM a partir de las actividades
+      let totalBac = 0, totalPv = 0, totalEv = 0, totalAc = 0;
+      for (const act of proyecto.actividades || []) {
+        totalBac += Number(act.bac);
+        totalPv += Number(act.bac) * Number(act.porcentajeAvancePlanificado) * 0.01;
+        totalEv += Number(act.bac) * Number(act.porcentajeAvanceReal) * 0.01;
+        totalAc += Number(act.costoActual);
+      }
+      const evmResult = this.evmService.calculateEvmIndicators({
+        bac: totalBac,
+        plannedProgressPercent: totalBac ? (totalPv / totalBac) * 100 : 0,
+        actualProgressPercent: totalBac ? (totalEv / totalBac) * 100 : 0,
+        ac: totalAc,
+      });
+      let projectStatus = 'Project is on track';
+      if (evmResult.cpi !== null && evmResult.cpi < 1) projectStatus = 'Project is over budget';
+      if (evmResult.spi !== null && evmResult.spi < 1) projectStatus = 'Project is behind schedule';
+      if (evmResult.cpi !== null && evmResult.cpi > 1) projectStatus = 'Project is under budget';
+      if (evmResult.spi !== null && evmResult.spi > 1) projectStatus = 'Project is ahead of schedule';
+      return {
+        totalBac,
+        totalPv,
+        totalEv,
+        totalAc,
+        cpi: evmResult.cpi,
+        spi: evmResult.spi,
+        eac: evmResult.eac,
+        vac: evmResult.vac,
+        cpiInterpretation: evmResult.cpiInterpretation,
+        spiInterpretation: evmResult.spiInterpretation,
+        projectStatus,
+      };
+    }));
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} proyecto`;
+
+  async findOne(id: string) {
+    return await this.proyectoRepo.findOne({ where: { id }, relations: ['actividades'] });
   }
 
-  update(id: number, updateProyectoDto: UpdateProyectoDto) {
-    return `This action updates a #${id} proyecto`;
+
+  async update(id: string, updateProyectoDto: UpdateProyectoDto) {
+    await this.proyectoRepo.update(id, updateProyectoDto);
+    return this.findOne(id);
   }
   
 
-  remove(id: number) {
-    return `This action removes a #${id} proyecto`;
+
+  async remove(id: string) {
+    await this.proyectoRepo.delete(id);
+    return { deleted: true };
   }
 }
