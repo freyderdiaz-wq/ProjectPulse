@@ -96,3 +96,58 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+---
+
+## ProjectPulse - Estado actual y flujo de trabajo
+
+### 1. Arquitectura y tecnologías
+- **NestJS** (v11): Backend modular, REST, OpenAPI, Clean Architecture.
+- **TypeORM**: ORM para PostgreSQL, entidades, repositorios y migraciones.
+- **PostgreSQL**: Base de datos relacional.
+- **Swagger**: Documentación automática de endpoints.
+- **class-validator**: Validación de DTOs.
+- **Jest/Supertest**: Pruebas unitarias y de integración.
+
+### 2. Estructura de carpetas relevante
+- `src/proyectos/`: Lógica de proyectos (entidad, DTOs, servicio, controlador, pruebas).
+- `src/actividades/`: Lógica de actividades (entidad, DTOs, servicio, controlador, pruebas).
+- `src/evm/`: Lógica de indicadores EVM.
+- `test/`: Pruebas end-to-end (e2e) con Supertest.
+
+### 3. Endpoints principales
+- `GET /api/projects`: Lista todos los proyectos.
+- `GET /api/projects/:id`: Detalle y dashboard EVM de un proyecto.
+- `POST /api/projects`: Crear proyecto.
+- `PUT /api/projects/:id`: Editar proyecto.
+- `DELETE /api/projects/:id`: Eliminar proyecto.
+- `GET /api/activities/project/:projectId`: Lista actividades de un proyecto.
+- `POST /api/activities`: Crear actividad.
+- `PUT /api/activities/:id`: Editar actividad.
+- `DELETE /api/activities/:id`: Eliminar actividad.
+
+### 4. Pruebas unitarias y de integración
+- Unitarias: Servicios y lógica EVM (`*.service.spec.ts`, `evm.service.spec.ts`).
+- Integración: Endpoints y flujo real (`test/proyectos.e2e-spec.ts`, `test/app.e2e-spec.ts`).
+- Ejecutar:
+  ```bash
+  npm run test         # Unitarias
+  npm run test:e2e     # Integración
+  npm run test:cov     # Cobertura
+  ```
+
+### 5. Flujo de desarrollo
+1. Crear rama desde develop para cada feature.
+2. Implementar entidades, DTOs, servicios y controladores usando TypeORM.
+3. Adaptar CRUD a base de datos real.
+4. Escribir pruebas unitarias y de integración.
+5. Documentar endpoints con Swagger y README.
+6. Hacer PR a develop y mergear tras revisión.
+
+### 6. Estado actual
+- CRUD real de proyectos y actividades usando PostgreSQL y TypeORM.
+- DTOs validados y documentados.
+- Pruebas unitarias y de integración cubren lógica y endpoints principales.
+- Documentación actualizada.
+
+---

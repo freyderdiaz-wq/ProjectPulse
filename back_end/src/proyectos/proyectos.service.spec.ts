@@ -1,24 +1,42 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProyectosService } from './proyectos.service';
 import { EvmService } from '../evm/evm.service';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Proyecto } from './entities/proyecto.entity';
+import { Repository } from 'typeorm';
 
 describe('ProyectosService', () => {
   let service: ProyectosService;
+  let evmService: EvmService;
+  let proyectoRepo: Repository<Proyecto>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ProyectosService, EvmService],
+      providers: [
+        ProyectosService,
+        EvmService,
+        {
+          provide: getRepositoryToken(Proyecto),
+          useValue: {}, // mock repo, no se usa en estos tests
+        },
+      ],
     }).compile();
 
     service = module.get<ProyectosService>(ProyectosService);
+    evmService = module.get<EvmService>(EvmService);
+    proyectoRepo = module.get<Repository<Proyecto>>(getRepositoryToken(Proyecto));
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+    expect(evmService).toBeDefined();
+    expect(proyectoRepo).toBeDefined();
   });
 
   it('should return safe zeros if no activities', async () => {
-    const result = await service.getProjectSummary(999); // projectId sin actividades
+    // Mockear getActivitiesByProjectId
+    jest.spyOn<any, any>(service, 'getActivitiesByProjectId').mockResolvedValue([]);
+    const result = await service.getProjectSummary(999);
     expect(result.totalBac).toBe(0);
     expect(result.totalPv).toBe(0);
     expect(result.totalEv).toBe(0);
@@ -33,7 +51,12 @@ describe('ProyectosService', () => {
   });
 
   it('should calculate consolidated metrics for a project', async () => {
-    const result = await service.getProjectSummary(1); // projectId con actividades simuladas
+    // Mockear getActivitiesByProjectId
+    jest.spyOn<any, any>(service, 'getActivitiesByProjectId').mockResolvedValue([
+      { bac: 10000, pv: 5000, ev: 4000, ac: 3500 },
+      { bac: 5000, pv: 3000, ev: 2500, ac: 2000 },
+    ]);
+    const result = await service.getProjectSummary(1);
     expect(result.totalBac).toBe(15000);
     expect(result.totalPv).toBe(8000);
     expect(result.totalEv).toBe(6500);
