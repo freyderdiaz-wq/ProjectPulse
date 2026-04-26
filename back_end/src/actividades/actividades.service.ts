@@ -1,6 +1,6 @@
 
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateActividadeDto } from './dto/create-actividade.dto';
@@ -22,13 +22,16 @@ export class ActividadesService {
    * Simulación: reemplazar por consulta real a la base de datos.
    */
   async findByProject(projectId: string) {
-    return await this.actividadRepo.find({ where: { proyecto: { id: projectId } }, relations: ['proyecto'] });
+    if (!projectId) throw new BadRequestException('El ID del proyecto es requerido');
+    const actividades = await this.actividadRepo.find({ where: { proyecto: { id: projectId } }, relations: ['proyecto'] });
+    if (!actividades || actividades.length === 0) throw new NotFoundException('No se encontraron actividades para el proyecto');
+    return actividades;
   }
 
   async create(createActividadeDto: CreateActividadeDto) {
-    // Buscar el proyecto relacionado
+    if (!createActividadeDto.proyectoId) throw new BadRequestException('proyectoId es requerido');
     const proyecto = await this.proyectoRepo.findOne({ where: { id: createActividadeDto.proyectoId } });
-    if (!proyecto) throw new Error('Proyecto no encontrado');
+    if (!proyecto) throw new NotFoundException('Proyecto no encontrado');
     const actividad = this.actividadRepo.create({ ...createActividadeDto, proyecto });
     return await this.actividadRepo.save(actividad);
   }
@@ -38,16 +41,23 @@ export class ActividadesService {
   }
 
   async findOne(id: string) {
-    return await this.actividadRepo.findOne({ where: { id }, relations: ['proyecto'] });
+    if (!id) throw new BadRequestException('El ID de la actividad es requerido');
+    const actividad = await this.actividadRepo.findOne({ where: { id }, relations: ['proyecto'] });
+    if (!actividad) throw new NotFoundException('Actividad no encontrada');
+    return actividad;
   }
 
   async update(id: string, updateActividadeDto: UpdateActividadeDto) {
-    await this.actividadRepo.update(id, updateActividadeDto);
+    if (!id) throw new BadRequestException('El ID de la actividad es requerido');
+    const result = await this.actividadRepo.update(id, updateActividadeDto);
+    if (result.affected === 0) throw new NotFoundException('Actividad no encontrada');
     return this.findOne(id);
   }
 
   async remove(id: string) {
-    await this.actividadRepo.delete(id);
+    if (!id) throw new BadRequestException('El ID de la actividad es requerido');
+    const result = await this.actividadRepo.delete(id);
+    if (result.affected === 0) throw new NotFoundException('Actividad no encontrada');
     return { deleted: true };
   }
 }

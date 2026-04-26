@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateProyectoDto } from './dto/create-proyecto.dto';
@@ -19,24 +19,10 @@ export class ProyectosService {
    * @param projectId ID del proyecto
    */
   async getProjectSummary(projectId: number): Promise<ProjectDashboardDTO> {
-    // Simulación: obtener actividades del proyecto (reemplazar por consulta real)
+    if (!projectId) throw new BadRequestException('El ID del proyecto es requerido');
     const activities = await this.getActivitiesByProjectId(projectId);
-
     if (!activities || activities.length === 0) {
-      // Si no hay actividades, devolver DTO seguro con ceros
-      return {
-        totalBac: 0,
-        totalPv: 0,
-        totalEv: 0,
-        totalAc: 0,
-        cpi: null,
-        spi: null,
-        eac: null,
-        vac: null,
-        cpiInterpretation: 'No calculable',
-        spiInterpretation: 'No calculable',
-        projectStatus: 'No activities found',
-      };
+      throw new NotFoundException('No se encontraron actividades para el proyecto');
     }
 
     // Sumar totales
@@ -99,6 +85,7 @@ export class ProyectosService {
   // Métodos CRUD generados por NestJS
 
   async create(createProyectoDto: CreateProyectoDto) {
+    if (!createProyectoDto.nombre) throw new BadRequestException('El nombre del proyecto es requerido');
     const proyecto = this.proyectoRepo.create(createProyectoDto);
     return await this.proyectoRepo.save(proyecto);
   }
@@ -144,19 +131,26 @@ export class ProyectosService {
 
 
   async findOne(id: string) {
-    return await this.proyectoRepo.findOne({ where: { id }, relations: ['actividades'] });
+    if (!id) throw new BadRequestException('El ID del proyecto es requerido');
+    const proyecto = await this.proyectoRepo.findOne({ where: { id }, relations: ['actividades'] });
+    if (!proyecto) throw new NotFoundException('Proyecto no encontrado');
+    return proyecto;
   }
 
 
   async update(id: string, updateProyectoDto: UpdateProyectoDto) {
-    await this.proyectoRepo.update(id, updateProyectoDto);
+    if (!id) throw new BadRequestException('El ID del proyecto es requerido');
+    const result = await this.proyectoRepo.update(id, updateProyectoDto);
+    if (result.affected === 0) throw new NotFoundException('Proyecto no encontrado');
     return this.findOne(id);
   }
   
 
 
   async remove(id: string) {
-    await this.proyectoRepo.delete(id);
+    if (!id) throw new BadRequestException('El ID del proyecto es requerido');
+    const result = await this.proyectoRepo.delete(id);
+    if (result.affected === 0) throw new NotFoundException('Proyecto no encontrado');
     return { deleted: true };
   }
 }
