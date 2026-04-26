@@ -7,6 +7,11 @@ export class CreateActividadeDto {
 	@IsNotEmpty()
 	nombre!: string;
 
+	@ApiProperty({ description: 'ID del proyecto al que pertenece la actividad', example: 'uuid-proyecto' })
+	@IsNotEmpty()
+	@IsString()
+	proyectoId!: string;
+
 	@ApiProperty({ description: 'Budget at Completion (BAC) de la actividad', example: 10000 })
 	@IsNumber()
 	@Min(0)
