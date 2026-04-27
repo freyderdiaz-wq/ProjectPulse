@@ -146,3 +146,7 @@ Realiza la integracion de PostfreSQL con TypeORM en la base de datos.
 Coloca mensajes de error y validaciones avanzadas correctas.
 
 -----
+
+Como comienzo el front ya tengo terminado todo el back y ya hice las intalaciones de angular 21 pero que estructura de comienzo me recomiendas.
+
+-----
