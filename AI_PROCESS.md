@@ -1,10 +1,3 @@
-**Herramientas utilizadas.**
-GithubCopilot:Para el desarrollo. Se utilizó la funcion de control de pagina. Haciendo mas efectivo la programacion haciendo que haga pruebas automaticas y que sean corregidas inmediatamente.
-Gemini: Para entender la logica de negocio, Tambien ayuda a codigos simples como creacion de proyecto de nest o angular etc..
-
-NoteBookLM: Para entender un poco más desde fuentes, Usé la funcion de Video para entender un poco más.
-
-
 **PROMPTS ENVIADOS**
 
 Genera las entidades de TypeORM en NestJS para un sistema de gestión de proyectos y actividades.
@@ -201,13 +194,3 @@ valida muy bien por que si no hay actividades no ahy por que haber aviso de que 
 -----
 
 Realiza pruebas unitarias asegurando que los valores de los proyectos se estan calculando de forma correcta 
-
-
-**Aprendizaje EVM**
-- Le pregunte Que era un EVM, ejemplos practicos y una explicación simple sobre ello.
-- Validé que entendi las formulas practicando con Gemini haciendo ejercicios practicos. Ademas veía la plantilla de formulas del PDF.
-
-**Dos Decisiones que no Seguí a la IA**
-
-1. Cuando le pedí que generara el esquema de Objetos, ya que en nestjs uno puede generar plantillas las cuales te generan los archivos necesarios TypeORM, Pero lo que hacia la IA era generarme solo 1 archivo tipo .entity sin carpeta y en la base de los archivos principales, haciendo una muy mala practica de estructura de backend.
-
