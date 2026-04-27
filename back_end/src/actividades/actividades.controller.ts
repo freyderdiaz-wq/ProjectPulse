@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Body, Param, HttpCode, HttpStatus, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
+import { Controller, Get, Post, Put, Patch, Delete, Body, Param, HttpCode, HttpStatus, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { ActividadesService } from './actividades.service';
 import { CreateActividadeDto } from './dto/create-actividade.dto';
@@ -11,6 +11,13 @@ import { ResponseActividadeDto } from './dto/response-actividade.dto';
 export class ActividadesController {
   constructor(private readonly actividadesService: ActividadesService) {}
 
+  @Get()
+  @ApiOperation({ summary: 'Listar todas las actividades' })
+  @ApiResponse({ status: 200, description: 'Lista de todas las actividades', type: [ResponseActividadeDto] })
+  findAll() {
+    return this.actividadesService.findAll();
+  }
+
   @Get('/project/:projectId')
   @ApiOperation({ summary: 'Listar actividades de un proyecto con métricas EVM individuales' })
   @ApiParam({ name: 'projectId', description: 'ID del proyecto' })
@@ -18,6 +25,15 @@ export class ActividadesController {
   findByProject(@Param('projectId') projectId: string) {
     // Llama al servicio para obtener actividades por proyecto
     return this.actividadesService.findByProject(projectId);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Obtener una actividad por su ID' })
+  @ApiParam({ name: 'id', description: 'ID de la actividad' })
+  @ApiResponse({ status: 200, description: 'Actividad encontrada', type: ResponseActividadeDto })
+  @ApiResponse({ status: 404, description: 'Actividad no encontrada' })
+  findOne(@Param('id') id: string) {
+    return this.actividadesService.findOne(id);
   }
 
   @Post()
@@ -29,7 +45,7 @@ export class ActividadesController {
     return this.actividadesService.create(createActividadeDto);
   }
 
-  @Put(':id')
+  @Patch(':id')
   @ApiOperation({ summary: 'Editar una actividad existente' })
   @ApiParam({ name: 'id', description: 'ID de la actividad' })
   @ApiResponse({ status: 200, description: 'Actividad actualizada', type: ResponseActividadeDto })
@@ -37,5 +53,14 @@ export class ActividadesController {
   @ApiResponse({ status: 400, description: 'Datos inválidos' })
   update(@Param('id') id: string, @Body() updateActividadeDto: UpdateActividadeDto) {
     return this.actividadesService.update(id, updateActividadeDto);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Eliminar una actividad' })
+  @ApiParam({ name: 'id', description: 'ID de la actividad' })
+  @ApiResponse({ status: 200, description: 'Actividad eliminada exitosamente' })
+  @ApiResponse({ status: 404, description: 'Actividad no encontrada' })
+  remove(@Param('id') id: string) {
+    return this.actividadesService.remove(id);
   }
 }

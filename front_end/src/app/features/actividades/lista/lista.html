@@ -1,1 +1,84 @@
-<p>lista works!</p>
+<div class="min-h-screen bg-gray-50 p-6">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8 flex items-start justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">Actividades</h1>
+        <p class="text-gray-600 mt-2">Gestiona todas las actividades organizadas por proyecto</p>
+      </div>
+      <a routerLink="/actividades/nueva" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold whitespace-nowrap">
+        + Actividad
+      </a>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading()" class="flex items-center justify-center min-h-[400px]">
+      <div class="text-center">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <p class="mt-4 text-gray-600 text-lg">Cargando actividades...</p>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error()" class="p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded">
+      <p class="font-bold">Error</p>
+      <p>{{ error() }}</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading() && !error() && actividades().length === 0" class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded text-center">
+      <p class="text-blue-800 text-lg">No hay actividades registradas. <a routerLink="/actividades/nueva" class="text-blue-600 font-bold hover:underline">Crea una</a></p>
+    </div>
+
+    <!-- Actividades Agrupadas por Proyecto -->
+    <div *ngIf="!loading() && !error() && actividadesAgrupadas().length > 0" class="space-y-8">
+      <!-- Por cada proyecto -->
+      <div *ngFor="let grupo of actividadesAgrupadas()" class="bg-white rounded-lg shadow overflow-hidden">
+        <!-- Header del Proyecto -->
+        <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4 border-l-4 border-blue-800">
+          <h2 class="text-xl font-bold text-white">
+            {{ grupo.proyecto?.nombre || 'Sin proyecto' }}
+          </h2>
+          <p class="text-blue-100 text-sm mt-1">
+            {{ grupo.actividades.length }} actividad<span *ngIf="grupo.actividades.length !== 1">es</span>
+          </p>
+        </div>
+
+        <!-- Tabla de Actividades del Proyecto -->
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-gray-100 border-b-2 border-gray-300">
+              <tr>
+                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nombre</th>
+                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">BAC</th>
+                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Avance Plan (%)</th>
+                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Avance Real (%)</th>
+                <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Costo Real</th>
+                <th class="px-6 py-3 text-center text-sm font-semibold text-gray-700">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let actividad of grupo.actividades" class="border-b border-gray-200 hover:bg-gray-50 transition">
+                <td class="px-6 py-4 font-medium text-gray-900">{{ actividad.nombre }}</td>
+                <td class="px-6 py-4 text-gray-700">{{ actividad.bac | number:'1.0-0' }}</td>
+                <td class="px-6 py-4 text-gray-700">{{ actividad.porcentajeAvancePlanificado }}%</td>
+                <td class="px-6 py-4 text-gray-700">{{ actividad.porcentajeAvanceReal }}%</td>
+                <td class="px-6 py-4 text-gray-700">{{ actividad.costoActual | number:'1.0-0' }}</td>
+                <td class="px-6 py-4 text-center">
+                  <div class="flex gap-2 justify-center">
+                    <button (click)="editar(actividad.id)" class="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition">
+                      Editar
+                    </button>
+                    <button (click)="eliminar(actividad.id)" class="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition">
+                      Eliminar
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

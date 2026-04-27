@@ -1,0 +1,202 @@
+<!-- Loading State -->
+<div *ngIf="loading()" class="flex items-center justify-center min-h-[400px]">
+  <div class="text-center">
+    <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    <p class="mt-4 text-gray-600 text-lg">Cargando dashboard...</p>
+  </div>
+</div>
+
+<!-- Error State -->
+<div *ngIf="error()" class="p-4 m-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+  <p class="font-bold">Error</p>
+  <p>{{ error() }}</p>
+</div>
+
+<!-- Dashboard Content -->
+<div *ngIf="!loading() && !error()" class="p-6 max-w-7xl mx-auto">
+  <!-- Project Selector and Header -->
+  <div class="mb-8" *ngIf="proyecto()">
+    <div class="flex items-start justify-between mb-4">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">{{ proyecto()?.nombre }}</h1>
+        <p class="text-gray-600 mt-2">Estado del Proyecto - Métricas EVM</p>
+      </div>
+      <div *ngIf="proyectos().length > 0" class="flex flex-col">
+        <label class="text-sm font-semibold text-gray-700 mb-2">Selecciona un proyecto:</label>
+        <select (change)="seleccionarProyecto($any($event.target).value)" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option *ngFor="let p of proyectos()" [value]="p.id" [selected]="p.id === proyecto()?.id">{{ p.nombre }}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State - No Activities -->
+  <div *ngIf="proyecto() && actividades().length === 0" class="bg-yellow-50 border-l-4 border-yellow-500 p-8 rounded text-center">
+    <p class="text-yellow-800 text-lg font-semibold mb-4">No hay actividades registradas para {{ proyecto()?.nombre }}</p>
+    <p class="text-yellow-700 mb-6">Para ver las métricas del proyecto, necesitas crear actividades primero.</p>
+    <a [routerLink]="['/actividades/nueva']" [queryParams]="{ proyecto: proyecto()?.id }" class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold">
+      + Crear Actividad
+    </a>
+  </div>
+
+  <!-- Indicators Grid - Organized in 3 rows -->
+  <!-- Row 1: Basic Metrics -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6" *ngIf="proyecto() && actividades().length > 0 && indicadores">
+    <!-- BAC Card -->
+    <div class="bg-white rounded-lg shadow p-6 border-t-4 border-blue-500">
+      <p class="text-gray-600 text-sm font-semibold">BAC</p>
+      <p class="text-3xl font-bold text-blue-600 mt-2">{{ indicadores?.bac | number:'1.0-0' }}</p>
+      <p class="text-xs text-gray-500 mt-1">Presupuesto Autorizado</p>
+    </div>
+
+    <!-- PV Card -->
+    <div class="bg-white rounded-lg shadow p-6 border-t-4 border-green-500">
+      <p class="text-gray-600 text-sm font-semibold">PV</p>
+      <p class="text-3xl font-bold text-green-600 mt-2">{{ indicadores?.pv | number:'1.0-0' }}</p>
+      <p class="text-xs text-gray-500 mt-1">Valor Planificado</p>
+    </div>
+
+    <!-- EV Card -->
+    <div class="bg-white rounded-lg shadow p-6 border-t-4 border-yellow-500">
+      <p class="text-gray-600 text-sm font-semibold">EV</p>
+      <p class="text-3xl font-bold text-yellow-600 mt-2">{{ indicadores?.ev | number:'1.0-0' }}</p>
+      <p class="text-xs text-gray-500 mt-1">Valor Ganado</p>
+    </div>
+
+    <!-- AC Card -->
+    <div class="bg-white rounded-lg shadow p-6 border-t-4 border-red-500">
+      <p class="text-gray-600 text-sm font-semibold">AC</p>
+      <p class="text-3xl font-bold text-red-600 mt-2">{{ indicadores?.ac | number:'1.0-0' }}</p>
+      <p class="text-xs text-gray-500 mt-1">Costo Real</p>
+    </div>
+  </div>
+
+  <!-- Row 2: Performance Indices -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6" *ngIf="proyecto() && actividades().length > 0 && indicadores">
+    <!-- CPI -->
+    <div class="bg-white rounded-lg shadow p-6 border-l-4" [ngClass]="indicadores?.cpi >= 1 ? 'border-green-500' : 'border-red-500'">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-gray-600 text-sm font-semibold">CPI (Desempeño de Costos)</p>
+          <p class="text-2xl font-bold mt-3" [ngClass]="indicadores?.cpi >= 1 ? 'text-green-600' : 'text-red-600'">
+            {{ indicadores?.cpi | number:'1.2-2' }}
+          </p>
+          <p class="text-xs text-gray-500 mt-2">{{ indicadores?.cpi >= 1 ? '✓ Dentro del presupuesto' : '✗ Por encima del presupuesto' }}</p>
+        </div>
+        <span class="text-4xl" [ngClass]="indicadores?.cpi >= 1 ? 'text-green-400' : 'text-red-400'">{{ indicadores?.cpi >= 1 ? '✓' : '⚠' }}</span>
+      </div>
+    </div>
+
+    <!-- SPI -->
+    <div class="bg-white rounded-lg shadow p-6 border-l-4" [ngClass]="indicadores?.spi >= 1 ? 'border-green-500' : 'border-orange-500'">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-gray-600 text-sm font-semibold">SPI (Desempeño del Cronograma)</p>
+          <p class="text-2xl font-bold mt-3" [ngClass]="indicadores?.spi >= 1 ? 'text-green-600' : 'text-orange-600'">
+            {{ indicadores?.spi | number:'1.2-2' }}
+          </p>
+          <p class="text-xs text-gray-500 mt-2">{{ indicadores?.spi >= 1 ? '✓ Dentro del cronograma' : '⚠ Retrasado' }}</p>
+        </div>
+        <span class="text-4xl" [ngClass]="indicadores?.spi >= 1 ? 'text-green-400' : 'text-orange-400'">{{ indicadores?.spi >= 1 ? '✓' : '⚠' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status Banner -->
+  <div class="mb-6" *ngIf="proyecto() && actividades().length > 0 && indicadores">
+    <div *ngIf="indicadores?.cpi >= 1 && indicadores?.spi >= 1" class="bg-green-50 border-l-4 border-green-500 p-4 rounded flex items-center gap-3">
+      <span class="text-2xl">✓</span>
+      <div>
+        <p class="font-bold text-green-800">Proyecto en buen estado</p>
+        <p class="text-sm text-green-700">El proyecto está dentro del presupuesto y cronograma</p>
+      </div>
+    </div>
+    <div *ngIf="indicadores?.cpi < 1 || indicadores?.spi < 1" class="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded flex items-center gap-3">
+      <span class="text-2xl">⚠</span>
+      <div>
+        <p class="font-bold text-yellow-800">Atención requerida</p>
+        <p class="text-sm text-yellow-700" *ngIf="indicadores?.cpi < 1">CPI bajo: gastos por encima de lo planificado</p>
+        <p class="text-sm text-yellow-700" *ngIf="indicadores?.spi < 1">SPI bajo: atraso en el cronograma</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 3: Variance Metrics -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8" *ngIf="proyecto() && actividades().length > 0 && indicadores">
+    <!-- SV Card -->
+    <div class="bg-white rounded-lg shadow p-4 border-t-4 border-purple-500">
+      <p class="text-gray-600 text-xs font-semibold">SV</p>
+      <p class="text-2xl font-bold mt-1" [ngClass]="indicadores?.sv >= 0 ? 'text-purple-600' : 'text-orange-600'">{{ indicadores?.sv | number:'1.0-0' }}</p>
+      <p class="text-xs text-gray-500 mt-1">Varianza Cronograma</p>
+    </div>
+
+    <!-- EAC Card -->
+    <div class="bg-white rounded-lg shadow p-4 border-t-4 border-indigo-500">
+      <p class="text-gray-600 text-xs font-semibold">EAC</p>
+      <p class="text-2xl font-bold mt-1 text-indigo-600">{{ indicadores?.eac | number:'1.0-0' }}</p>
+      <p class="text-xs text-gray-500 mt-1">Estimado al Completar</p>
+    </div>
+
+    <!-- VAC Card -->
+    <div class="bg-white rounded-lg shadow p-4 border-t-4 border-pink-500">
+      <p class="text-gray-600 text-xs font-semibold">VAC</p>
+      <p class="text-2xl font-bold mt-1" [ngClass]="indicadores?.vac >= 0 ? 'text-pink-600' : 'text-red-600'">{{ indicadores?.vac | number:'1.0-0' }}</p>
+      <p class="text-xs text-gray-500 mt-1">Varianza al Completar</p>
+    </div>
+  </div>
+
+  <!-- Activities Section -->
+  <div class="mb-8" *ngIf="proyecto() && actividades().length > 0">
+    <h2 class="text-2xl font-bold text-gray-900 mb-4">Actividades del Proyecto</h2>
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead class="bg-gray-100 border-b-2 border-gray-300">
+          <tr>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Nombre</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">BAC</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">PV</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">EV</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">AC</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">CPI</th>
+            <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">SPI</th>
+            <th class="px-4 py-3 text-center text-sm font-semibold text-gray-700">Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let a of actividades()" class="border-b border-gray-200 hover:bg-gray-50 transition">
+            <td class="px-4 py-3 font-medium text-gray-900">{{ a.nombre }}</td>
+            <td class="px-4 py-3 text-gray-700">{{ a.bac | number:'1.0-0' }}</td>
+            <td class="px-4 py-3 text-gray-700">{{ a.bac * (a.porcentajeAvancePlanificado / 100) | number:'1.0-0' }}</td>
+            <td class="px-4 py-3 text-gray-700">{{ a.bac * (a.porcentajeAvanceReal / 100) | number:'1.0-0' }}</td>
+            <td class="px-4 py-3 text-gray-700">{{ a.costoActual | number:'1.0-0' }}</td>
+            <td class="px-4 py-3">
+              <span class="px-2 py-1 rounded-full text-xs font-semibold" 
+                    [ngClass]="(a.bac * (a.porcentajeAvanceReal / 100)) / a.costoActual >= 1 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
+                  {{ (a.bac * (a.porcentajeAvanceReal / 100)) / a.costoActual | number:'1.2-2' }}
+              </span>
+            </td>
+            <td class="px-4 py-3">
+              <span class="px-2 py-1 rounded-full text-xs font-semibold" 
+                    [ngClass]="(a.bac * (a.porcentajeAvanceReal / 100)) / (a.bac * (a.porcentajeAvancePlanificado / 100)) >= 1 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'">
+                  {{ (a.bac * (a.porcentajeAvanceReal / 100)) / (a.bac * (a.porcentajeAvancePlanificado / 100)) | number:'1.2-2' }}
+              </span>
+            </td>
+            <td class="px-4 py-3 text-center">
+              <a [routerLink]="['/actividades/editar', a.id]" class="inline-block px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition text-sm">
+                Editar
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Chart Section -->
+  <div class="bg-white rounded-lg shadow p-6" *ngIf="proyecto() && actividades().length > 0">
+    <h2 class="text-2xl font-bold text-gray-900 mb-4">Gráfica PV, EV, AC por Actividad</h2>
+    <div id="grafica" class="w-full" style="position: relative; height: 400px;">
+      <canvas id="grafica-canvas" style="display: block;"></canvas>
+    </div>
+  </div>
+</div>

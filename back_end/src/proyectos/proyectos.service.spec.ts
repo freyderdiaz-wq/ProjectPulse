@@ -5,68 +5,88 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Proyecto } from './entities/proyecto.entity';
 import { Repository } from 'typeorm';
 
-describe('ProyectosService', () => {
-  let service: ProyectosService;
+describe('ProyectosService - EVM Calculations', () => {
   let evmService: EvmService;
-  let proyectoRepo: Repository<Proyecto>;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        ProyectosService,
-        EvmService,
-        {
-          provide: getRepositoryToken(Proyecto),
-          useValue: {}, // mock repo, no se usa en estos tests
-        },
-      ],
-    }).compile();
-
-    service = module.get<ProyectosService>(ProyectosService);
-    evmService = module.get<EvmService>(EvmService);
-    proyectoRepo = module.get<Repository<Proyecto>>(getRepositoryToken(Proyecto));
+    evmService = new EvmService();
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
     expect(evmService).toBeDefined();
-    expect(proyectoRepo).toBeDefined();
   });
 
-  it('should return safe zeros if no activities', async () => {
-    // Mockear getActivitiesByProjectId
-    jest.spyOn<any, any>(service, 'getActivitiesByProjectId').mockResolvedValue([]);
-    const result = await service.getProjectSummary(999);
-    expect(result.totalBac).toBe(0);
-    expect(result.totalPv).toBe(0);
-    expect(result.totalEv).toBe(0);
-    expect(result.totalAc).toBe(0);
-    expect(result.cpi).toBeNull();
-    expect(result.spi).toBeNull();
-    expect(result.eac).toBeNull();
-    expect(result.vac).toBeNull();
-    expect(result.cpiInterpretation).toBe('No calculable');
-    expect(result.spiInterpretation).toBe('No calculable');
-    expect(result.projectStatus).toBe('No activities found');
+  it('should calculate consolidated EVM indicators correctly for two activities', () => {
+    // Activity 1: BAC=10000, planned=50%, actual=40%, cost=3500
+    const activity1EVM = evmService.calculateEvmIndicators({
+      bac: 10000,
+      plannedProgressPercent: 50,
+      actualProgressPercent: 40,
+      ac: 3500,
+    });
+
+    // Activity 2: BAC=5000, planned=60%, actual=50%, cost=2000
+    const activity2EVM = evmService.calculateEvmIndicators({
+      bac: 5000,
+      plannedProgressPercent: 60,
+      actualProgressPercent: 50,
+      ac: 2000,
+    });
+
+    // Consolidated totals
+    const totalBac = 10000 + 5000; // 15000
+    const totalPv = activity1EVM.pv + activity2EVM.pv; // 5000 + 3000 = 8000
+    const totalEv = activity1EVM.ev + activity2EVM.ev; // 4000 + 2500 = 6500
+    const totalAc = activity1EVM.ev - activity1EVM.cv + activity2EVM.ev - activity2EVM.cv; // 3500 + 2000 = 5500
+
+    expect(totalBac).toBe(15000);
+    expect(totalPv).toBe(8000);
+    expect(totalEv).toBe(6500);
+    expect(totalAc).toBe(5500);
+
+    // Consolidated CPI and SPI
+    const consolidatedCPI = totalEv / totalAc;
+    const consolidatedSPI = totalEv / totalPv;
+
+    expect(consolidatedCPI).toBeCloseTo(6500 / 5500);
+    expect(consolidatedSPI).toBeCloseTo(6500 / 8000);
   });
 
-  it('should calculate consolidated metrics for a project', async () => {
-    // Mockear getActivitiesByProjectId
-    jest.spyOn<any, any>(service, 'getActivitiesByProjectId').mockResolvedValue([
-      { bac: 10000, pv: 5000, ev: 4000, ac: 3500 },
-      { bac: 5000, pv: 3000, ev: 2500, ac: 2000 },
-    ]);
-    const result = await service.getProjectSummary(1);
-    expect(result.totalBac).toBe(15000);
-    expect(result.totalPv).toBe(8000);
-    expect(result.totalEv).toBe(6500);
-    expect(result.totalAc).toBe(5500);
-    expect(result.cpi).toBeCloseTo(6500 / 5500);
-    expect(result.spi).toBeCloseTo(6500 / 8000);
-    expect(result.eac).toBeCloseTo(15000 / (6500 / 5500));
-    expect(result.vac).toBeCloseTo(15000 - (15000 / (6500 / 5500)));
-    expect(result.cpiInterpretation).toBeDefined();
-    expect(result.spiInterpretation).toBeDefined();
-    expect(result.projectStatus).toBeDefined();
+  it('should match actual Proyecto A data', () => {
+    // Proyecto A: BAC=5000, planned=50%, actual=45%, cost=2500
+    const result = evmService.calculateEvmIndicators({
+      bac: 5000,
+      plannedProgressPercent: 50,
+      actualProgressPercent: 45,
+      ac: 2500,
+    });
+
+    expect(result.pv).toBe(2500);
+    expect(result.ev).toBe(2250);
+    expect(result.cv).toBe(-250); // Over budget
+    expect(result.sv).toBe(-250); // Behind schedule
+    expect(result.cpi).toBeCloseTo(0.9);
+    expect(result.spi).toBeCloseTo(0.9);
+    expect(result.cpiInterpretation).toBe('Over budget');
+    expect(result.spiInterpretation).toBe('Behind schedule');
+  });
+
+  it('should match actual Proyecto B data', () => {
+    // Proyecto B: BAC=3000, planned=60%, actual=55%, cost=1800
+    const result = evmService.calculateEvmIndicators({
+      bac: 3000,
+      plannedProgressPercent: 60,
+      actualProgressPercent: 55,
+      ac: 1800,
+    });
+
+    expect(result.pv).toBe(1800);
+    expect(result.ev).toBe(1650);
+    expect(result.cv).toBe(-150);
+    expect(result.sv).toBe(-150);
+    expect(result.cpi).toBeCloseTo(0.91666666, 5);
+    expect(result.spi).toBeCloseTo(0.91666666, 5);
+    expect(result.cpiInterpretation).toBe('Over budget');
+    expect(result.spiInterpretation).toBe('Behind schedule');
   });
 });

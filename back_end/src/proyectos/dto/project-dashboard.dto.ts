@@ -1,6 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ProjectDashboardDTO {
+  @ApiProperty({ description: 'Project ID', example: '550e8400-e29b-41d4-a716-446655440000' })
+  id!: string;
+
+  @ApiProperty({ description: 'Project name', example: 'Mi Proyecto' })
+  nombre!: string;
+
+  @ApiProperty({ description: 'Project description', example: 'Descripción del proyecto' })
+  descripcion?: string;
+
   @ApiProperty({ description: 'Total Budget at Completion', example: 20000 })
   totalBac!: number;
 
@@ -12,6 +21,9 @@ export class ProjectDashboardDTO {
 
   @ApiProperty({ description: 'Total Actual Cost', example: 9000 })
   totalAc!: number;
+
+  @ApiProperty({ description: 'Schedule Variance', example: -1000 })
+  sv!: number;
 
   @ApiProperty({ description: 'Cost Performance Index', example: 1.22 })
   cpi!: number | null;
