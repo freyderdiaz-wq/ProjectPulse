@@ -150,3 +150,47 @@ Coloca mensajes de error y validaciones avanzadas correctas.
 Como comienzo el front ya tengo terminado todo el back y ya hice las intalaciones de angular 21 pero que estructura de comienzo me recomiendas.
 
 -----
+
+Dame un prompt para que la IA defina el modelo de datos y para que realice el servicio completo
+
+-----
+
+Necesito programar el modelo de datos y el servicio completo para un módulo de actividades que se conecta a un backend en NestJS.
+
+Requisitos técnicos:
+
+Modelo: Crea una interfaz Actividad basada en estas propiedades: nombre (string), bac (number), plannedProgressPercent (number), actualProgressPercent (number), actualCost (number) y proyectoId (uuid/string).
+
+Servicio:
+
+Usa la nueva sintaxis de Angular 21 con la función inject(HttpClient).
+
+Utiliza Signals (signal) para manejar el estado de la lista de actividades.
+
+Implementa los métodos: getAll() (GET), getById(id) (GET), create(dto) (POST), update(id, dto) (PATCH) y delete(id) (DELETE).
+
+La URL base debe ser tomada de una variable de entorno o ser http://localhost:3000/actividades.
+
+Usa firstValueFrom de RxJS para manejar las peticiones como Promesas (async/await) para un código más limpio.
+
+Entrégame el código para actividad.interface.ts y actividad.service.ts siguiendo las mejores prácticas de standalone components."
+
+-----
+
+Realiza un cheklist completo de lo que falta en el front, y implementalo.
+
+-----
+
+Los botones no funcionan utiliza la funcion para que tu entres en el enlace http://localhost:4200/dashboard y revisa que cada una de las funciones que deberian estar esten efectivamente, si no funcionan entonces arreglalo de inmediato haciendo que todo funcione correctamente.
+
+-----
+
+Valida cada uno de los requerimientos y revisa que se cumpla cada uno de ellos si no se cumplen solucionalo inmediatamente.
+
+-----
+
+valida muy bien por que si no hay actividades no ahy por que haber aviso de que el CPI este por encima si nisiquiera hay actividades es mas deberias de colocar algo que diga que no ahy actividades para ese proecto y un boton para crear actividad de ese proyecto que lo coloque de una vez en el select el proyecto 
+
+-----
+
+Realiza pruebas unitarias asegurando que los valores de los proyectos se estan calculando de forma correcta 

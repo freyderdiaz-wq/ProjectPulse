@@ -49,7 +49,17 @@ export class ActividadesService {
 
   async update(id: string, updateActividadeDto: UpdateActividadeDto) {
     if (!id) throw new BadRequestException('El ID de la actividad es requerido');
-    const result = await this.actividadRepo.update(id, updateActividadeDto);
+    
+    // Handle proyectoId separately if provided
+    const updateData: any = { ...updateActividadeDto };
+    if (updateData.proyectoId) {
+      const proyecto = await this.proyectoRepo.findOne({ where: { id: updateData.proyectoId } });
+      if (!proyecto) throw new NotFoundException('Proyecto no encontrado');
+      updateData.proyecto = proyecto;
+      delete updateData.proyectoId; // Remove proyectoId from update
+    }
+    
+    const result = await this.actividadRepo.update(id, updateData);
     if (result.affected === 0) throw new NotFoundException('Actividad no encontrada');
     return this.findOne(id);
   }

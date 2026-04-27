@@ -1,14 +1,17 @@
-import { Injectable, signal, inject } from '@angular/core';
+/**
+ * Servicio para gestionar proyectos: CRUD y estado reactivo.
+ */
+
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { Proyecto } from '../interfaces/proyecto';
 
-const BASE_URL = (import.meta.env?.NG_APP_API_URL as string) || 'http://localhost:3000/proyectos';
+const BASE_URL = 'http://localhost:3000/api/projects';
 
 @Injectable({ providedIn: 'root' })
 export class ProyectoService {
-  private http = inject(HttpClient);
-
+  private readonly http = inject(HttpClient);
   proyectos = signal<Proyecto[]>([]);
 
   async getAll(): Promise<Proyecto[]> {
@@ -28,7 +31,7 @@ export class ProyectoService {
   }
 
   async update(id: string, dto: Partial<Proyecto>): Promise<Proyecto> {
-    const proyecto = await firstValueFrom(this.http.patch<Proyecto>(`${BASE_URL}/${id}`, dto));
+    const proyecto = await firstValueFrom(this.http.put<Proyecto>(`${BASE_URL}/${id}`, dto));
     this.proyectos.update(list =>
       list.map(p => (p.id === id ? { ...p, ...proyecto } : p))
     );

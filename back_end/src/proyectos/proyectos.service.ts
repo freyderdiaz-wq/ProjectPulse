@@ -20,6 +20,11 @@ export class ProyectosService {
    */
   async getProjectSummary(projectId: number): Promise<ProjectDashboardDTO> {
     if (!projectId) throw new BadRequestException('El ID del proyecto es requerido');
+    
+    // Obtener el proyecto para tener id y nombre
+    const proyecto = await this.proyectoRepo.findOne({ where: { id: projectId.toString() } });
+    if (!proyecto) throw new NotFoundException('Proyecto no encontrado');
+    
     const activities = await this.getActivitiesByProjectId(projectId);
     if (!activities || activities.length === 0) {
       throw new NotFoundException('No se encontraron actividades para el proyecto');
@@ -53,6 +58,9 @@ export class ProyectosService {
     if (evmResult.spi !== null && evmResult.spi > 1) projectStatus = 'Project is ahead of schedule';
 
     return {
+      id: proyecto.id.toString(),
+      nombre: proyecto.nombre,
+      descripcion: proyecto.descripcion,
       totalBac,
       totalPv,
       totalEv,
@@ -114,10 +122,14 @@ export class ProyectosService {
       if (evmResult.cpi !== null && evmResult.cpi > 1) projectStatus = 'Project is under budget';
       if (evmResult.spi !== null && evmResult.spi > 1) projectStatus = 'Project is ahead of schedule';
       return {
+        id: proyecto.id,
+        nombre: proyecto.nombre,
+        descripcion: proyecto.descripcion,
         totalBac,
         totalPv,
         totalEv,
         totalAc,
+        sv: evmResult.sv,
         cpi: evmResult.cpi,
         spi: evmResult.spi,
         eac: evmResult.eac,
@@ -140,9 +152,10 @@ export class ProyectosService {
 
   async update(id: string, updateProyectoDto: UpdateProyectoDto) {
     if (!id) throw new BadRequestException('El ID del proyecto es requerido');
-    const result = await this.proyectoRepo.update(id, updateProyectoDto);
-    if (result.affected === 0) throw new NotFoundException('Proyecto no encontrado');
-    return this.findOne(id);
+    const proyecto = await this.proyectoRepo.findOne({ where: { id } });
+    if (!proyecto) throw new NotFoundException('Proyecto no encontrado');
+    Object.assign(proyecto, updateProyectoDto);
+    return await this.proyectoRepo.save(proyecto);
   }
   
 
