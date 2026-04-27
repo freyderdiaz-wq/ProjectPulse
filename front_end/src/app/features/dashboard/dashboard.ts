@@ -22,7 +22,7 @@ export class Dashboard implements OnInit, AfterViewInit {
   proyectos = signal<Proyecto[]>([]);
   proyecto = signal<Proyecto | null>(null);
   actividades = signal<Actividad[]>([]);
-  indicadores: any = null;
+  indicadores = signal<any>(null);
   chartReady = signal(false);
 
   constructor(
@@ -57,12 +57,12 @@ export class Dashboard implements OnInit, AfterViewInit {
         return this.actividadService.getAll().then(acts => {
           const filtered = acts.filter(a => a.proyectoId === proyectoSeleccionado!.id);
           this.actividades.set(filtered);
-          this.indicadores = this.calcularIndicadores(filtered);
+          this.indicadores.set(this.calcularIndicadores(filtered));
           // Renderizar gráfica después de cargar datos
           setTimeout(() => this.renderChart(), 100);
         });
       }
-      this.indicadores = this.calcularIndicadores([]);
+      this.indicadores.set(this.calcularIndicadores([]));
       return Promise.resolve();
     }).catch((err) => {
       console.error('Error cargando dashboard:', err);
@@ -79,7 +79,7 @@ export class Dashboard implements OnInit, AfterViewInit {
       this.actividadService.getAll().then(acts => {
         const filtered = acts.filter(a => a.proyectoId === proyectoId);
         this.actividades.set(filtered);
-        this.indicadores = this.calcularIndicadores(filtered);
+        this.indicadores.set(this.calcularIndicadores(filtered));
         setTimeout(() => this.renderChart(), 100);
       });
     }

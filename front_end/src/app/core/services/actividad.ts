@@ -15,40 +15,37 @@ export class ActividadService {
 
   actividades = signal<Actividad[]>([]);
 
+  private normalizeActividad(a: any): Actividad {
+    return {
+      ...a,
+      bac: Number(a.bac) || 0,
+      porcentajeAvancePlanificado: Number(a.porcentajeAvancePlanificado) || 0,
+      porcentajeAvanceReal: Number(a.porcentajeAvanceReal) || 0,
+      costoActual: Number(a.costoActual) || 0,
+      proyectoId: a.proyecto?.id || a.proyectoId
+    };
+  }
+
   async getAll(): Promise<Actividad[]> {
     const data = await firstValueFrom(this.http.get<any[]>(BASE_URL));
-    const mapped = data.map(a => ({
-      ...a,
-      proyectoId: a.proyecto?.id || a.proyectoId
-    }));
+    const mapped = data.map(a => this.normalizeActividad(a));
     this.actividades.set(mapped);
     return mapped;
   }
 
   async getById(id: string): Promise<Actividad> {
     const data = await firstValueFrom(this.http.get<any>(`${BASE_URL}/${id}`));
-    return {
-      ...data,
-      proyectoId: data.proyecto?.id || data.proyectoId
-    };
+    return this.normalizeActividad(data);
   }
 
   async create(dto: Omit<Actividad, 'id'>): Promise<Actividad> {
     const actividad = await firstValueFrom(this.http.post<any>(BASE_URL, dto));
-    const mapped = {
-      ...actividad,
-      proyectoId: actividad.proyecto?.id || actividad.proyectoId
-    };
-    this.actividades.update((list: Actividad[]) => [...list, mapped]);
-    return mapped;
+    return this.normalizeActividad(actividad);
   }
 
   async update(id: string, dto: Partial<Actividad>): Promise<Actividad> {
     const actividad = await firstValueFrom(this.http.patch<any>(`${BASE_URL}/${id}`, dto));
-    const mapped = {
-      ...actividad,
-      proyectoId: actividad.proyecto?.id || actividad.proyectoId
-    };
+    const mapped = this.normalizeActividad(actividad);
     this.actividades.update((list: Actividad[]) =>
       list.map((a: Actividad) => (a.id === id ? { ...a, ...mapped } : a))
     );

@@ -41,106 +41,106 @@
 
   <!-- Indicators Grid - Organized in 3 rows -->
   <!-- Row 1: Basic Metrics -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-4 px-4" *ngIf="proyecto() && actividades().length > 0 && indicadores">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-4 px-4" *ngIf="proyecto() && actividades().length > 0 && indicadores()">
     <!-- BAC Card -->
     <div class="bg-white rounded-lg shadow p-6 border-t-4 border-blue-500">
       <p class="text-gray-600 text-sm font-semibold">BAC</p>
-      <p class="text-3xl font-bold text-blue-600 mt-2">{{ indicadores?.bac | number:'1.0-0' }}</p>
+      <p class="text-3xl font-bold text-blue-600 mt-2">{{ indicadores()?.bac | number:'1.0-0' }}</p>
       <p class="text-xs text-gray-500 mt-1">Presupuesto Autorizado</p>
     </div>
 
     <!-- PV Card -->
     <div class="bg-white rounded-lg shadow p-6 border-t-4 border-green-500">
       <p class="text-gray-600 text-sm font-semibold">PV</p>
-      <p class="text-3xl font-bold text-green-600 mt-2">{{ indicadores?.pv | number:'1.0-0' }}</p>
+      <p class="text-3xl font-bold text-green-600 mt-2">{{ indicadores()?.pv | number:'1.0-0' }}</p>
       <p class="text-xs text-gray-500 mt-1">Valor Planificado</p>
     </div>
 
     <!-- EV Card -->
     <div class="bg-white rounded-lg shadow p-6 border-t-4 border-yellow-500">
       <p class="text-gray-600 text-sm font-semibold">EV</p>
-      <p class="text-3xl font-bold text-yellow-600 mt-2">{{ indicadores?.ev | number:'1.0-0' }}</p>
+      <p class="text-3xl font-bold text-yellow-600 mt-2">{{ indicadores()?.ev | number:'1.0-0' }}</p>
       <p class="text-xs text-gray-500 mt-1">Valor Ganado</p>
     </div>
 
     <!-- AC Card -->
     <div class="bg-white rounded-lg shadow p-6 border-t-4 border-red-500">
       <p class="text-gray-600 text-sm font-semibold">AC</p>
-      <p class="text-3xl font-bold text-red-600 mt-2">{{ indicadores?.ac | number:'1.0-0' }}</p>
+      <p class="text-3xl font-bold text-red-600 mt-2">{{ indicadores()?.ac | number:'1.0-0' }}</p>
       <p class="text-xs text-gray-500 mt-1">Costo Real</p>
     </div>
   </div>
 
   <!-- Row 2: Performance Indices -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 px-4" *ngIf="proyecto() && actividades().length > 0 && indicadores">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 px-4" *ngIf="proyecto() && actividades().length > 0 && indicadores()">
     <!-- CPI -->
-    <div class="bg-white rounded-lg shadow p-6 border-l-4" [ngClass]="indicadores?.cpi >= 1 ? 'border-green-500' : 'border-red-500'">
+    <div class="bg-white rounded-lg shadow p-6 border-l-4" [ngClass]="indicadores()?.cpi >= 1 ? 'border-green-500' : 'border-red-500'">
       <div class="flex items-center justify-between">
         <div>
           <p class="text-gray-600 text-sm font-semibold">CPI (Desempeño de Costos)</p>
-          <p class="text-2xl font-bold mt-3" [ngClass]="indicadores?.cpi >= 1 ? 'text-green-600' : 'text-red-600'">
-            {{ indicadores?.cpi | number:'1.2-2' }}
+          <p class="text-2xl font-bold mt-3" [ngClass]="indicadores()?.cpi >= 1 ? 'text-green-600' : 'text-red-600'">
+            {{ indicadores()?.cpi | number:'1.2-2' }}
           </p>
-          <p class="text-xs text-gray-500 mt-2">{{ indicadores?.cpi >= 1 ? '✓ Dentro del presupuesto' : '✗ Por encima del presupuesto' }}</p>
+          <p class="text-xs text-gray-500 mt-2">{{ indicadores()?.cpi >= 1 ? '✓ Dentro del presupuesto' : '✗ Por encima del presupuesto' }}</p>
         </div>
-        <span class="text-4xl" [ngClass]="indicadores?.cpi >= 1 ? 'text-green-400' : 'text-red-400'">{{ indicadores?.cpi >= 1 ? '✓' : '⚠' }}</span>
+        <span class="text-4xl" [ngClass]="indicadores()?.cpi >= 1 ? 'text-green-400' : 'text-red-400'">{{ indicadores()?.cpi >= 1 ? '✓' : '⚠' }}</span>
       </div>
     </div>
 
     <!-- SPI -->
-    <div class="bg-white rounded-lg shadow p-6 border-l-4" [ngClass]="indicadores?.spi >= 1 ? 'border-green-500' : 'border-orange-500'">
+    <div class="bg-white rounded-lg shadow p-6 border-l-4" [ngClass]="indicadores()?.spi >= 1 ? 'border-green-500' : 'border-orange-500'">
       <div class="flex items-center justify-between">
         <div>
           <p class="text-gray-600 text-sm font-semibold">SPI (Desempeño del Cronograma)</p>
-          <p class="text-2xl font-bold mt-3" [ngClass]="indicadores?.spi >= 1 ? 'text-green-600' : 'text-orange-600'">
-            {{ indicadores?.spi | number:'1.2-2' }}
+          <p class="text-2xl font-bold mt-3" [ngClass]="indicadores()?.spi >= 1 ? 'text-green-600' : 'text-orange-600'">
+            {{ indicadores()?.spi | number:'1.2-2' }}
           </p>
-          <p class="text-xs text-gray-500 mt-2">{{ indicadores?.spi >= 1 ? '✓ Dentro del cronograma' : '⚠ Retrasado' }}</p>
+          <p class="text-xs text-gray-500 mt-2">{{ indicadores()?.spi >= 1 ? '✓ Dentro del cronograma' : '⚠ Retrasado' }}</p>
         </div>
-        <span class="text-4xl" [ngClass]="indicadores?.spi >= 1 ? 'text-green-400' : 'text-orange-400'">{{ indicadores?.spi >= 1 ? '✓' : '⚠' }}</span>
+        <span class="text-4xl" [ngClass]="indicadores()?.spi >= 1 ? 'text-green-400' : 'text-orange-400'">{{ indicadores()?.spi >= 1 ? '✓' : '⚠' }}</span>
       </div>
     </div>
   </div>
 
   <!-- Status Banner -->
-  <div class="mb-4 px-4" *ngIf="proyecto() && actividades().length > 0 && indicadores">
-    <div *ngIf="indicadores?.cpi >= 1 && indicadores?.spi >= 1" class="bg-green-50 border-l-4 border-green-500 p-3 rounded flex items-center gap-3">
+  <div class="mb-4 px-4" *ngIf="proyecto() && actividades().length > 0 && indicadores()">
+    <div *ngIf="indicadores()?.cpi >= 1 && indicadores()?.spi >= 1" class="bg-green-50 border-l-4 border-green-500 p-3 rounded flex items-center gap-3">
       <span class="text-xl">✓</span>
       <div>
         <p class="font-bold text-green-800 text-sm">Proyecto en buen estado</p>
         <p class="text-xs text-green-700">El proyecto está dentro del presupuesto y cronograma</p>
       </div>
     </div>
-    <div *ngIf="indicadores?.cpi < 1 || indicadores?.spi < 1" class="bg-yellow-50 border-l-4 border-yellow-500 p-3 rounded flex items-center gap-3">
+    <div *ngIf="indicadores()?.cpi < 1 || indicadores()?.spi < 1" class="bg-yellow-50 border-l-4 border-yellow-500 p-3 rounded flex items-center gap-3">
       <span class="text-xl">⚠</span>
       <div>
         <p class="font-bold text-yellow-800 text-sm">Atención requerida</p>
-        <p class="text-xs text-yellow-700" *ngIf="indicadores?.cpi < 1">CPI bajo: gastos por encima de lo planificado</p>
-        <p class="text-xs text-yellow-700" *ngIf="indicadores?.spi < 1">SPI bajo: atraso en el cronograma</p>
+        <p class="text-xs text-yellow-700" *ngIf="indicadores()?.cpi < 1">CPI bajo: gastos por encima de lo planificado</p>
+        <p class="text-xs text-yellow-700" *ngIf="indicadores()?.spi < 1">SPI bajo: atraso en el cronograma</p>
       </div>
     </div>
   </div>
 
   <!-- Row 3: Variance Metrics -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4 px-4" *ngIf="proyecto() && actividades().length > 0 && indicadores">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4 px-4" *ngIf="proyecto() && actividades().length > 0 && indicadores()">
     <!-- SV Card -->
     <div class="bg-white rounded-lg shadow p-4 border-t-4 border-purple-500">
       <p class="text-gray-600 text-xs font-semibold">SV</p>
-      <p class="text-2xl font-bold mt-1" [ngClass]="indicadores?.sv >= 0 ? 'text-purple-600' : 'text-orange-600'">{{ indicadores?.sv | number:'1.0-0' }}</p>
+      <p class="text-2xl font-bold mt-1" [ngClass]="indicadores()?.sv >= 0 ? 'text-purple-600' : 'text-orange-600'">{{ indicadores()?.sv | number:'1.0-0' }}</p>
       <p class="text-xs text-gray-500 mt-1">Varianza Cronograma</p>
     </div>
 
     <!-- EAC Card -->
     <div class="bg-white rounded-lg shadow p-4 border-t-4 border-indigo-500">
       <p class="text-gray-600 text-xs font-semibold">EAC</p>
-      <p class="text-2xl font-bold mt-1 text-indigo-600">{{ indicadores?.eac | number:'1.0-0' }}</p>
+      <p class="text-2xl font-bold mt-1 text-indigo-600">{{ indicadores()?.eac | number:'1.0-0' }}</p>
       <p class="text-xs text-gray-500 mt-1">Estimado al Completar</p>
     </div>
 
     <!-- VAC Card -->
     <div class="bg-white rounded-lg shadow p-4 border-t-4 border-pink-500">
       <p class="text-gray-600 text-xs font-semibold">VAC</p>
-      <p class="text-2xl font-bold mt-1" [ngClass]="indicadores?.vac >= 0 ? 'text-pink-600' : 'text-red-600'">{{ indicadores?.vac | number:'1.0-0' }}</p>
+      <p class="text-2xl font-bold mt-1" [ngClass]="indicadores()?.vac >= 0 ? 'text-pink-600' : 'text-red-600'">{{ indicadores()?.vac | number:'1.0-0' }}</p>
       <p class="text-xs text-gray-500 mt-1">Varianza al Completar</p>
     </div>
   </div>
