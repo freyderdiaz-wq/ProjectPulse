@@ -202,12 +202,24 @@ valida muy bien por que si no hay actividades no ahy por que haber aviso de que 
 
 Realiza pruebas unitarias asegurando que los valores de los proyectos se estan calculando de forma correcta 
 
+-----
 
-**Aprendizaje EVM**
-- Le pregunte Que era un EVM, ejemplos practicos y una explicación simple sobre ello.
-- Validé que entendi las formulas practicando con Gemini haciendo ejercicios practicos. Ademas veía la plantilla de formulas del PDF.
+**APRENDIZAJE EVM**
+- Le pregunté Que era un EVM, ejemplos prácticos y una explicación simple sobre ello.
+- Validé que entendí las formulas practicando con Gemini haciendo ejercicios prácticos. Además veía la plantilla de formulas del PDF.
 
-**Dos Decisiones que no Seguí a la IA**
+**DOS DECISIONES QUE NO SEGUÍ A LA IA**
 
-1. Cuando le pedí que generara el esquema de Objetos, ya que en nestjs uno puede generar plantillas las cuales te generan los archivos necesarios TypeORM, Pero lo que hacia la IA era generarme solo 1 archivo tipo .entity sin carpeta y en la base de los archivos principales, haciendo una muy mala practica de estructura de backend.
+1. Cuando le pedí que generara el esquema de Objetos, ya que en nestjs uno puede generar plantillas las cuales te generan los archivos necesarios TypeORM, Pero lo que hacía la IA era generarme solo 1 archivo tipo .entity sin carpeta y en la base de los archivos principales, haciendo una muy mala práctica de estructura de backend.
+
+2. Hay varias veces que la IA por falta de contexto o hay veces que por falta de ortografía me llevaba a otros pasos y otras opciones muy erradas de la prueba haciendo que no tenga sentido, claramente no seguí con la propuesta de opciones y continué con otro chat.
+
+**UNA DECISIÓN DE ARQUITECTURA QUE TOMASTE DE FORMA INDEPENDIENTE**
+
+- Estructura de los frameworks (Nestjs y Angular).
+- Estructura de datos.
+
+**REFLEXIÓN HONESTA QUE HARÍA DIFERENTE SI REPITIERA**
+
+Ser un poco más descriptivo en mis mensajes ya que hay algunos que no tienen mucho contexto haciendo que la IA tome otras decisiones haciendo perder un poco más de tiempo. También tener un poco más de orden en el git ya que al principio fue un poco confuso. Me hubiera gustado hacerlo mediante requisitos, que en sí lo hice pero no correctamente.
 
