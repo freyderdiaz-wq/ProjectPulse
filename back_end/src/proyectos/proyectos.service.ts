@@ -65,7 +65,6 @@ export class ProyectosService {
       totalPv,
       totalEv,
       totalAc,
-      sv: evmResult.sv,
       cpi: evmResult.cpi,
       spi: evmResult.spi,
       eac: evmResult.eac,
