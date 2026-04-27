@@ -1,3 +1,8 @@
+**Herramientas utilizadas.**
+GithubCopilot:Para el desarrollo. Se utilizó la funcion de control 
+
+
+
 **PROMPTS ENVIADOS**
 
 Genera las entidades de TypeORM en NestJS para un sistema de gestión de proyectos y actividades.
